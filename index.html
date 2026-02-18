@@ -16,8 +16,14 @@
 <body>
   <h1>Board Orders</h1>
   <p class="meta" id="meta">Loading…</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 0 0 12px;">
   <input id="q" placeholder="Search…" />
-  <div id="app"></div>
+  <label>From: <input id="from" type="date"></label>
+  <label>To: <input id="to" type="date"></label>
+  <button id="clear" type="button">Clear dates</button>
+</div>
+<div id="app"></div>
+
 
   <script>
     // 1) Paste your "Publish to web" CSV link below
@@ -63,12 +69,74 @@
       return `<table>${thead}${tbody}</table>`;
     }
 
-    function applySearch() {
-      const q = document.getElementById("q").value.trim().toLowerCase();
-      if (!q) {
-        document.getElementById("app").innerHTML = renderTable(allRows);
-        return;
-      }
+  function parseDateAny(value) {
+  // Handles:
+  // - yyyy-mm-dd
+  // - dd/mm/yyyy or dd-mm-yyyy (common NZ)
+  // - values that Date.parse understands
+  if (!value) return null;
+  const s = String(value).trim();
+  if (!s) return null;
+
+  // yyyy-mm-dd
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) {
+    const y = +iso[1], m = +iso[2], d = +iso[3];
+    return new Date(y, m - 1, d);
+  }
+
+  // dd/mm/yyyy or dd-mm-yyyy
+  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (dmy) {
+    let d = +dmy[1], m = +dmy[2], y = +dmy[3];
+    if (y < 100) y += 2000; // 24 -> 2024
+    return new Date(y, m - 1, d);
+  }
+
+  const t = Date.parse(s);
+  return Number.isFinite(t) ? new Date(t) : null;
+}
+
+function findDateColumnIndex(headerRow) {
+  // Picks the first column whose header includes "date"
+  const idx = headerRow.findIndex(h => String(h || "").toLowerCase().includes("date"));
+  return idx >= 0 ? idx : 0; // fallback to first column if none found
+}
+
+function applySearch() {
+  if (!allRows || allRows.length < 2) return;
+
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const fromVal = document.getElementById("from").value; // yyyy-mm-dd
+  const toVal = document.getElementById("to").value;
+
+  const header = allRows[0];
+  const dateCol = findDateColumnIndex(header);
+
+  const fromDate = fromVal ? parseDateAny(fromVal) : null;
+  const toDate = toVal ? parseDateAny(toVal) : null;
+
+  // inclusive end date: set to end of day
+  if (toDate) toDate.setHours(23, 59, 59, 999);
+
+  const body = allRows.slice(1).filter(r => {
+    // Text search filter
+    if (q && !r.join(" ").toLowerCase().includes(q)) return false;
+
+    // Date range filter
+    if (fromDate || toDate) {
+      const cellDate = parseDateAny(r[dateCol]);
+      if (!cellDate) return false; // if filtering by date, rows without a valid date drop out
+      if (fromDate && cellDate < fromDate) return false;
+      if (toDate && cellDate > toDate) return false;
+    }
+
+    return true;
+  });
+
+  document.getElementById("app").innerHTML = renderTable([header, ...body]);
+}
+
       const header = allRows[0];
       const body = allRows.slice(1).filter(r => r.join(" ").toLowerCase().includes(q));
       document.getElementById("app").innerHTML = renderTable([header, ...body]);
@@ -81,6 +149,14 @@
       document.getElementById("app").innerHTML = renderTable(allRows);
       document.getElementById("meta").textContent = "Last loaded: " + new Date().toLocaleString();
       document.getElementById("q").addEventListener("input", applySearch);
+      document.getElementById("from").addEventListener("change", applySearch);
+document.getElementById("to").addEventListener("change", applySearch);
+document.getElementById("clear").addEventListener("click", () => {
+  document.getElementById("from").value = "";
+  document.getElementById("to").value = "";
+  applySearch();
+});
+
     }
 
     main().catch(err => {
