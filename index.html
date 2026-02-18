@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Board Orders</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 16px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
+    th { position: sticky; top: 0; background: #f7f7f7; }
+    .meta { margin: 0 0 12px; color: #555; }
+    input { padding: 8px; width: 320px; max-width: 100%; margin: 0 0 12px; }
+  </style>
+</head>
+<body>
+  <h1>Board Orders</h1>
+  <p class="meta" id="meta">Loading…</p>
+  <input id="q" placeholder="Search…" />
+  <div id="app"></div>
+
+  <script>
+    // 1) Paste your "Publish to web" CSV link below
+    const CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_URL_HERE";
+
+    let allRows = [];
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], cell = "", inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i], n = text[i+1];
+        if (c === '"' && inQuotes && n === '"') { cell += '"'; i++; continue; }
+        if (c === '"') { inQuotes = !inQuotes; continue; }
+        if (c === ',' && !inQuotes) { row.push(cell); cell = ""; continue; }
+        if ((c === '\n' || c === '\r') && !inQuotes) {
+          if (cell.length || row.length) { row.push(cell); rows.push(row); }
+          row = []; cell = "";
+          if (c === '\r' && n === '\n') i++;
+          continue;
+        }
+        cell += c;
+      }
+      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+      return rows;
+    }
+
+    function escapeHTML(s) {
+      return String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+    }
+
+    function renderTable(rows) {
+      if (!rows.length) return "<p>No data.</p>";
+      const header = rows[0];
+      const body = rows.slice(1);
+
+      const thead = "<thead><tr>" + header.map(h => `<th>${escapeHTML(h)}</th>`).join("") + "</tr></thead>";
+      const tbody = "<tbody>" + body.map(r =>
+        "<tr>" + header.map((_, i) => `<td>${escapeHTML(r[i])}</td>`).join("") + "</tr>"
+      ).join("") + "</tbody>";
+
+      return `<table>${thead}${tbody}</table>`;
+    }
+
+    function applySearch() {
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      if (!q) {
+        document.getElementById("app").innerHTML = renderTable(allRows);
+        return;
+      }
+      const header = allRows[0];
+      const body = allRows.slice(1).filter(r => r.join(" ").toLowerCase().includes(q));
+      document.getElementById("app").innerHTML = renderTable([header, ...body]);
+    }
+
+    async function main() {
+      const res = await fetch(CSV_URL, { cache: "no-store" });
+      const text = await res.text();
+      allRows = parseCSV(text);
+      document.getElementById("app").innerHTML = renderTable(allRows);
+      document.getElementById("meta").textContent = "Last loaded: " + new Date().toLocaleString();
+      document.getElementById("q").addEventListener("input", applySearch);
+    }
+
+    main().catch(err => {
+      document.getElementById("meta").textContent = "Failed to load data.";
+      document.getElementById("app").innerHTML = "<pre>" + escapeHTML(err.message) + "</pre>";
+    });
+  </script>
+</body>
+</html>
