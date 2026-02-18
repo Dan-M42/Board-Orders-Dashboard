@@ -7,51 +7,46 @@
 
   <style>
     :root{
-      /* Slightly darker soft-grey */
-      --bg:#e3e7ef;
-      --bg2:#edf1f7;
-
-      --cardA:rgba(255,255,255,.82);
-      --cardB:rgba(255,255,255,.68);
-
+      --bg:#e6eaf2;     /* soft grey */
+      --bg2:#f0f3f9;    /* lighter gradient */
+      --card:#ffffffcc; /* glassy card */
       --text:#0f172a;
-      --muted:#52627a;
-
-      --accent:#2f6bff;
-
+      --muted:#56657d;
       --line:rgba(15,23,42,.12);
-      --line2:rgba(15,23,42,.08);
-
-      --shadow: 0 18px 45px rgba(15,23,42,.14);
-      --radius: 18px;
-      --focus: rgba(47,107,255,.26);
+      --line2:rgba(15,23,42,.07);
+      --accent:#2f6bff;
+      --shadow: 0 16px 40px rgba(15,23,42,.14);
+      --radius: 16px;
+      --focus: rgba(47,107,255,.22);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color: var(--text);
       background:
-        radial-gradient(1100px 650px at 12% 0%, rgba(47,107,255,.12), transparent 55%),
-        radial-gradient(900px 600px at 92% 10%, rgba(47,107,255,.08), transparent 60%),
+        radial-gradient(900px 520px at 10% 0%, rgba(47,107,255,.10), transparent 55%),
+        radial-gradient(800px 520px at 92% 6%, rgba(47,107,255,.07), transparent 60%),
         linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
     .wrap{
-      max-width: 1320px;
-      margin: 24px auto 60px;
+      max-width: 1440px;
+      margin: 22px auto 60px;
       padding: 0 16px;
     }
 
+    /* Header */
     .topbar{
       display:flex;
       gap:14px;
       align-items:flex-end;
       justify-content:space-between;
       flex-wrap:wrap;
-      margin-bottom:14px;
+      margin-bottom:12px;
     }
 
     .title{
@@ -62,17 +57,17 @@
     }
 
     h1{
-      font-size: 24px;
-      line-height: 1.1;
       margin:0;
+      font-size: 22px;
       letter-spacing: .2px;
+      line-height: 1.1;
     }
 
     .sub{
       display:flex;
       gap:10px;
-      flex-wrap:wrap;
       align-items:center;
+      flex-wrap:wrap;
       color: var(--muted);
       font-size: 13px;
     }
@@ -82,9 +77,9 @@
       align-items:center;
       gap:8px;
       padding:6px 10px;
-      border:1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.58);
       border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.62);
       backdrop-filter: blur(6px);
     }
 
@@ -98,16 +93,16 @@
 
     .search{
       position:relative;
-      min-width: 320px;
-      flex: 1 1 320px;
-      max-width: 560px;
+      min-width: 340px;
+      flex: 1 1 340px;
+      max-width: 620px;
     }
 
     .search input{
       width:100%;
       padding: 11px 12px 11px 40px;
       border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.14);
+      border: 1px solid rgba(15,23,42,.16);
       background: rgba(255,255,255,.72);
       color: var(--text);
       outline:none;
@@ -118,10 +113,10 @@
     .search input:focus{
       border-color: rgba(47,107,255,.55);
       box-shadow: 0 0 0 4px var(--focus);
-      background: rgba(255,255,255,.90);
+      background: rgba(255,255,255,.92);
     }
 
-    .search input::placeholder{ color: rgba(82,98,122,.85); }
+    .search input::placeholder{ color: rgba(86,101,125,.85); }
 
     .search .icon{
       position:absolute;
@@ -136,7 +131,7 @@
     }
 
     .btn{
-      border:1px solid rgba(15,23,42,.14);
+      border:1px solid rgba(15,23,42,.16);
       background: rgba(255,255,255,.72);
       color: var(--text);
       padding: 10px 12px;
@@ -146,16 +141,17 @@
       transition: transform .05s ease, background .15s ease, border-color .15s ease;
       backdrop-filter: blur(6px);
     }
-    .btn:hover{ background: rgba(255,255,255,.90); border-color: rgba(47,107,255,.28); }
+    .btn:hover{ background: rgba(255,255,255,.92); border-color: rgba(47,107,255,.26); }
     .btn:active{ transform: translateY(1px); }
 
     .btn.primary{
       border-color: rgba(47,107,255,.35);
-      background: linear-gradient(180deg, rgba(47,107,255,.14), rgba(47,107,255,.08));
+      background: linear-gradient(180deg, rgba(47,107,255,.14), rgba(47,107,255,.07));
     }
 
+    /* Card + Table */
     .card{
-      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      background: linear-gradient(180deg, rgba(255,255,255,.84), rgba(255,255,255,.70));
       border: 1px solid rgba(15,23,42,.12);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -166,15 +162,20 @@
     .table-wrap{
       overflow:auto;
       max-height: calc(100vh - 210px);
-      background: rgba(255,255,255,.35);
+      background: rgba(255,255,255,.30);
     }
 
     table{
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 980px;
+      min-width: 1500px; /* wide enough to reduce truncation */
       font-size: 13px;
+    }
+
+    /* ALL TEXT IN ONE LINE */
+    thead th, tbody td{
+      white-space: nowrap;
     }
 
     thead th{
@@ -184,24 +185,28 @@
       text-align:left;
       font-weight: 700;
       letter-spacing:.15px;
-      background: linear-gradient(180deg, rgba(238,242,250,.96), rgba(228,234,246,.94));
-      border-bottom: 1px solid rgba(15,23,42,.12);
       padding: 12px 12px;
-      white-space: nowrap;
+      background: linear-gradient(180deg, rgba(236,241,250,.97), rgba(226,232,245,.95));
+      border-bottom: 1px solid rgba(15,23,42,.14);
     }
 
     tbody td{
       padding: 10px 12px;
-      border-bottom: 1px solid rgba(15,23,42,.08);
+      border-bottom: 1px solid var(--line2);
       color: rgba(15,23,42,.88);
-      vertical-align: top;
+      vertical-align: middle;
       background: rgba(255,255,255,.60);
+
+      /* tidy one-line with ellipsis */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 420px; /* default; specific columns overridden below */
     }
 
-    tbody tr:nth-child(odd) td{ background: rgba(244,247,252,.70); }
+    tbody tr:nth-child(odd) td{ background: rgba(244,247,252,.72); }
     tbody tr:hover td{ background: rgba(47,107,255,.10); }
 
-    /* Sticky first column */
+    /* Sticky first column (Job Number) */
     thead th:first-child,
     tbody td:first-child{
       position: sticky;
@@ -210,13 +215,37 @@
     }
     thead th:first-child{
       z-index: 4;
-      background: linear-gradient(180deg, rgba(238,242,250,.98), rgba(228,234,246,.96));
+      background: linear-gradient(180deg, rgba(236,241,250,.99), rgba(226,232,245,.97));
+      border-right: 1px solid rgba(15,23,42,.10);
     }
     tbody td:first-child{
       border-right: 1px solid rgba(15,23,42,.10);
       font-variant-numeric: tabular-nums;
     }
 
+    /* Column sizing (based on your current column order) */
+    /* 1 Job Number */
+    thead th:nth-child(1), tbody td:nth-child(1){ max-width: 120px; }
+    /* 2 Customer Name */
+    thead th:nth-child(2), tbody td:nth-child(2){ max-width: 260px; }
+    /* 3 PO# */
+    thead th:nth-child(3), tbody td:nth-child(3){ max-width: 120px; }
+    /* 4 Board description */
+    thead th:nth-child(4), tbody td:nth-child(4){ max-width: 420px; }
+    /* 5 Sheet size */
+    thead th:nth-child(5), tbody td:nth-child(5){ max-width: 130px; }
+    /* 6 Print Size */
+    thead th:nth-child(6), tbody td:nth-child(6){ max-width: 130px; }
+    /* 7 Stock Cut */
+    thead th:nth-child(7), tbody td:nth-child(7){ max-width: 160px; }
+    /* 8 Due date */
+    thead th:nth-child(8), tbody td:nth-child(8){ max-width: 170px; }
+    /* 9 Sheets */
+    thead th:nth-child(9), tbody td:nth-child(9){ max-width: 120px; text-align:right; font-variant-numeric: tabular-nums; }
+    /* 10 Comments */
+    thead th:nth-child(10), tbody td:nth-child(10){ max-width: 520px; }
+
+    /* Footer */
     .footerbar{
       display:flex;
       gap:10px;
@@ -225,7 +254,7 @@
       justify-content:space-between;
       padding: 12px 14px;
       border-top: 1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.66);
+      background: rgba(255,255,255,.62);
       color: var(--muted);
       font-size: 13px;
     }
@@ -257,7 +286,7 @@
       .search{ min-width: 100%; max-width: 100%; }
       .btn{ width: 100%; }
       .table-wrap{ max-height: none; }
-      table{ min-width: 920px; }
+      table{ min-width: 1400px; }
     }
   </style>
 </head>
@@ -301,7 +330,7 @@
           <span class="badge">Rows: <strong id="rows">0</strong></span>
           <span class="badge">Showing: <strong id="showing">0</strong></span>
         </div>
-        <div>Tip: type any keyword — it filters instantly.</div>
+        <div>Tip: hover a cell to see the full value.</div>
       </div>
     </div>
   </div>
@@ -355,11 +384,16 @@
         header.map(h => `<th>${escapeHTML(h)}</th>`).join("") +
         "</tr></thead>";
 
+      // Add title="" so hover shows full value
       const tbody =
         "<tbody>" +
         body.map(r =>
           "<tr>" +
-          header.map((_, i) => `<td>${escapeHTML(r[i])}</td>`).join("") +
+          header.map((_, i) => {
+            const v = r[i] ?? "";
+            const safe = escapeHTML(v);
+            return `<td title="${safe}">${safe}</td>`;
+          }).join("") +
           "</tr>"
         ).join("") +
         "</tbody>";
