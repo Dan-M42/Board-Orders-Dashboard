@@ -7,25 +7,24 @@
 
   <style>
     :root{
-      /* Soft grey base */
-      --bg:#eef1f6;
-      --bg2:#f6f7fb;
-      --card:#f3f5f9;
-      --card2:#ffffff;
+      /* Slightly darker soft-grey */
+      --bg:#e3e7ef;
+      --bg2:#edf1f7;
 
-      /* Blue Star-ish accent */
-      --accent:#2f6bff;
-      --accent2:#2b56d6;
+      --cardA:rgba(255,255,255,.82);
+      --cardB:rgba(255,255,255,.68);
 
       --text:#0f172a;
-      --muted:#5b6b84;
+      --muted:#52627a;
 
-      --line:rgba(15,23,42,.10);
-      --line2:rgba(15,23,42,.07);
+      --accent:#2f6bff;
 
-      --shadow: 0 18px 45px rgba(15,23,42,.12);
+      --line:rgba(15,23,42,.12);
+      --line2:rgba(15,23,42,.08);
+
+      --shadow: 0 18px 45px rgba(15,23,42,.14);
       --radius: 18px;
-      --focus: rgba(47,107,255,.28);
+      --focus: rgba(47,107,255,.26);
     }
 
     *{ box-sizing:border-box; }
@@ -35,8 +34,8 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color: var(--text);
       background:
-        radial-gradient(1100px 650px at 12% 0%, rgba(47,107,255,.16), transparent 55%),
-        radial-gradient(900px 600px at 92% 10%, rgba(47,107,255,.10), transparent 60%),
+        radial-gradient(1100px 650px at 12% 0%, rgba(47,107,255,.12), transparent 55%),
+        radial-gradient(900px 600px at 92% 10%, rgba(47,107,255,.08), transparent 60%),
         linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
@@ -46,38 +45,24 @@
       padding: 0 16px;
     }
 
-    /* Header */
     .topbar{
       display:flex;
       gap:14px;
-      align-items:center;
+      align-items:flex-end;
       justify-content:space-between;
       flex-wrap:wrap;
       margin-bottom:14px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 260px;
-    }
-
-    .brand img{
-      height: 34px;
-      width:auto;
-      display:block;
-      filter: drop-shadow(0 10px 18px rgba(15,23,42,.12));
     }
 
     .title{
       display:flex;
       flex-direction:column;
       gap:6px;
+      min-width: 260px;
     }
 
     h1{
-      font-size: 20px;
+      font-size: 24px;
       line-height: 1.1;
       margin:0;
       letter-spacing: .2px;
@@ -97,8 +82,8 @@
       align-items:center;
       gap:8px;
       padding:6px 10px;
-      border:1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.55);
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.58);
       border-radius: 999px;
       backdrop-filter: blur(6px);
     }
@@ -122,8 +107,8 @@
       width:100%;
       padding: 11px 12px 11px 40px;
       border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(15,23,42,.14);
+      background: rgba(255,255,255,.72);
       color: var(--text);
       outline:none;
       font-size: 14px;
@@ -133,10 +118,10 @@
     .search input:focus{
       border-color: rgba(47,107,255,.55);
       box-shadow: 0 0 0 4px var(--focus);
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.90);
     }
 
-    .search input::placeholder{ color: rgba(91,107,132,.85); }
+    .search input::placeholder{ color: rgba(82,98,122,.85); }
 
     .search .icon{
       position:absolute;
@@ -151,8 +136,8 @@
     }
 
     .btn{
-      border:1px solid rgba(15,23,42,.12);
-      background: rgba(255,255,255,.78);
+      border:1px solid rgba(15,23,42,.14);
+      background: rgba(255,255,255,.72);
       color: var(--text);
       padding: 10px 12px;
       border-radius: 12px;
@@ -161,18 +146,17 @@
       transition: transform .05s ease, background .15s ease, border-color .15s ease;
       backdrop-filter: blur(6px);
     }
-    .btn:hover{ background: rgba(255,255,255,.92); border-color: rgba(47,107,255,.28); }
+    .btn:hover{ background: rgba(255,255,255,.90); border-color: rgba(47,107,255,.28); }
     .btn:active{ transform: translateY(1px); }
 
     .btn.primary{
-      border-color: rgba(47,107,255,.38);
+      border-color: rgba(47,107,255,.35);
       background: linear-gradient(180deg, rgba(47,107,255,.14), rgba(47,107,255,.08));
     }
 
-    /* Card */
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.68));
-      border: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      border: 1px solid rgba(15,23,42,.12);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -182,7 +166,7 @@
     .table-wrap{
       overflow:auto;
       max-height: calc(100vh - 210px);
-      background: rgba(255,255,255,.38);
+      background: rgba(255,255,255,.35);
     }
 
     table{
@@ -200,24 +184,22 @@
       text-align:left;
       font-weight: 700;
       letter-spacing:.15px;
-      background: linear-gradient(180deg, rgba(244,247,252,.96), rgba(236,240,248,.94));
-      border-bottom: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(180deg, rgba(238,242,250,.96), rgba(228,234,246,.94));
+      border-bottom: 1px solid rgba(15,23,42,.12);
       padding: 12px 12px;
       white-space: nowrap;
     }
 
     tbody td{
       padding: 10px 12px;
-      border-bottom: 1px solid rgba(15,23,42,.07);
+      border-bottom: 1px solid rgba(15,23,42,.08);
       color: rgba(15,23,42,.88);
       vertical-align: top;
-      background: rgba(255,255,255,.62);
+      background: rgba(255,255,255,.60);
     }
 
-    tbody tr:nth-child(odd) td{ background: rgba(245,247,252,.70); }
-    tbody tr:hover td{
-      background: rgba(47,107,255,.10);
-    }
+    tbody tr:nth-child(odd) td{ background: rgba(244,247,252,.70); }
+    tbody tr:hover td{ background: rgba(47,107,255,.10); }
 
     /* Sticky first column */
     thead th:first-child,
@@ -228,14 +210,13 @@
     }
     thead th:first-child{
       z-index: 4;
-      background: linear-gradient(180deg, rgba(244,247,252,.98), rgba(236,240,248,.96));
+      background: linear-gradient(180deg, rgba(238,242,250,.98), rgba(228,234,246,.96));
     }
     tbody td:first-child{
-      border-right: 1px solid rgba(15,23,42,.08);
+      border-right: 1px solid rgba(15,23,42,.10);
       font-variant-numeric: tabular-nums;
     }
 
-    /* Footer */
     .footerbar{
       display:flex;
       gap:10px;
@@ -243,8 +224,8 @@
       align-items:center;
       justify-content:space-between;
       padding: 12px 14px;
-      border-top: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.72);
+      border-top: 1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.66);
       color: var(--muted);
       font-size: 13px;
     }
@@ -262,19 +243,14 @@
       gap:8px;
       padding:6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.70);
     }
 
     .dot{
       width:8px; height:8px; border-radius:999px;
       background: rgba(34,197,94,.95);
       box-shadow: 0 0 0 4px rgba(34,197,94,.14);
-    }
-
-    .accent{
-      color: var(--accent2);
-      font-weight: 700;
     }
 
     @media (max-width: 560px){
@@ -289,15 +265,11 @@
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="brand">
-        <!-- Put your uploaded logo file name here -->
-        <img src="bluestar.png" alt="Blue Star" />
-        <div class="title">
-          <h1>Board Orders</h1>
-          <div class="sub">
-            <span class="pill">Packaging board • NZ</span>
-            <span class="pill" id="meta">Loading…</span>
-          </div>
+      <div class="title">
+        <h1>Board Orders</h1>
+        <div class="sub">
+          <span class="pill">Packaging board</span>
+          <span class="pill" id="meta">Loading…</span>
         </div>
       </div>
 
@@ -325,11 +297,11 @@
 
       <div class="footerbar">
         <div class="status">
-          <span class="badge"><span class="dot"></span> Live from Google Sheets</span>
+          <span class="badge"><span class="dot"></span> Live data</span>
           <span class="badge">Rows: <strong id="rows">0</strong></span>
           <span class="badge">Showing: <strong id="showing">0</strong></span>
         </div>
-        <div>Tip: type any keyword — it filters instantly. <span class="accent">Blue Star</span> theme.</div>
+        <div>Tip: type any keyword — it filters instantly.</div>
       </div>
     </div>
   </div>
