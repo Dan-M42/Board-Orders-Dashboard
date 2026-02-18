@@ -10,158 +10,112 @@
     th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
     th { position: sticky; top: 0; background: #f7f7f7; }
     .meta { margin: 0 0 12px; color: #555; }
-    input { padding: 8px; width: 320px; max-width: 100%; margin: 0 0 12px; }
+    input { padding: 8px; width: 360px; max-width: 100%; margin: 0 0 12px; }
   </style>
 </head>
 <body>
   <h1>Board Orders</h1>
   <p class="meta" id="meta">Loading…</p>
-<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 0 0 12px;">
-  <input id="q" placeholder="Search…" />
-  <label>From: <input id="from" type="date"></label>
-  <label>To: <input id="to" type="date"></label>
-  <button id="clear" type="button">Clear dates</button>
-</div>
-<div id="app"></div>
 
+  <input id="q" placeholder="Search…" />
+  <div id="app"></div>
 
   <script>
-    // 1) Paste your "Publish to web" CSV link below
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwI5Gl1efRS5VPVpMpbmWAhtZ1OZb7J06xYy6h564VgT0Yoko_41KU_S8jRy5KZoYfcUX3XEmwkI7E/pub?gid=891768665&single=true&output=csv";
-
 
     let allRows = [];
 
     function parseCSV(text) {
+      // Simple CSV parser (handles quoted fields + commas inside quotes)
       const rows = [];
       let row = [], cell = "", inQuotes = false;
+
       for (let i = 0; i < text.length; i++) {
-        const c = text[i], n = text[i+1];
+        const c = text[i], n = text[i + 1];
+
         if (c === '"' && inQuotes && n === '"') { cell += '"'; i++; continue; }
         if (c === '"') { inQuotes = !inQuotes; continue; }
+
         if (c === ',' && !inQuotes) { row.push(cell); cell = ""; continue; }
+
         if ((c === '\n' || c === '\r') && !inQuotes) {
           if (cell.length || row.length) { row.push(cell); rows.push(row); }
           row = []; cell = "";
-          if (c === '\r' && n === '\n') i++;
+          if (c === '\r' && n === '\n') i++; // Windows newlines
           continue;
         }
+
         cell += c;
       }
+
       if (cell.length || row.length) { row.push(cell); rows.push(row); }
       return rows;
     }
 
     function escapeHTML(s) {
-      return String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
     }
 
     function renderTable(rows) {
-      if (!rows.length) return "<p>No data.</p>";
+      if (!rows || !rows.length) return "<p>No data.</p>";
+
       const header = rows[0];
       const body = rows.slice(1);
 
-      const thead = "<thead><tr>" + header.map(h => `<th>${escapeHTML(h)}</th>`).join("") + "</tr></thead>";
-      const tbody = "<tbody>" + body.map(r =>
-        "<tr>" + header.map((_, i) => `<td>${escapeHTML(r[i])}</td>`).join("") + "</tr>"
-      ).join("") + "</tbody>";
+      const thead =
+        "<thead><tr>" +
+        header.map(h => `<th>${escapeHTML(h)}</th>`).join("") +
+        "</tr></thead>";
+
+      const tbody =
+        "<tbody>" +
+        body.map(r =>
+          "<tr>" +
+          header.map((_, i) => `<td>${escapeHTML(r[i])}</td>`).join("") +
+          "</tr>"
+        ).join("") +
+        "</tbody>";
 
       return `<table>${thead}${tbody}</table>`;
     }
 
-  function parseDateAny(value) {
-  // Handles:
-  // - yyyy-mm-dd
-  // - dd/mm/yyyy or dd-mm-yyyy (common NZ)
-  // - values that Date.parse understands
-  if (!value) return null;
-  const s = String(value).trim();
-  if (!s) return null;
+    function applySearch() {
+      if (!allRows || allRows.length < 1) return;
 
-  // yyyy-mm-dd
-  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (iso) {
-    const y = +iso[1], m = +iso[2], d = +iso[3];
-    return new Date(y, m - 1, d);
-  }
-
-  // dd/mm/yyyy or dd-mm-yyyy
-  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if (dmy) {
-    let d = +dmy[1], m = +dmy[2], y = +dmy[3];
-    if (y < 100) y += 2000; // 24 -> 2024
-    return new Date(y, m - 1, d);
-  }
-
-  const t = Date.parse(s);
-  return Number.isFinite(t) ? new Date(t) : null;
-}
-
-function findDateColumnIndex(headerRow) {
-  // Picks the first column whose header includes "date"
-  const idx = headerRow.findIndex(h => String(h || "").toLowerCase().includes("date"));
-  return idx >= 0 ? idx : 0; // fallback to first column if none found
-}
-
-function applySearch() {
-  if (!allRows || allRows.length < 2) return;
-
-  const q = document.getElementById("q").value.trim().toLowerCase();
-  const fromVal = document.getElementById("from").value; // yyyy-mm-dd
-  const toVal = document.getElementById("to").value;
-
-  const header = allRows[0];
-  const dateCol = findDateColumnIndex(header);
-
-  const fromDate = fromVal ? parseDateAny(fromVal) : null;
-  const toDate = toVal ? parseDateAny(toVal) : null;
-
-  // inclusive end date: set to end of day
-  if (toDate) toDate.setHours(23, 59, 59, 999);
-
-  const body = allRows.slice(1).filter(r => {
-    // Text search filter
-    if (q && !r.join(" ").toLowerCase().includes(q)) return false;
-
-    // Date range filter
-    if (fromDate || toDate) {
-      const cellDate = parseDateAny(r[dateCol]);
-      if (!cellDate) return false; // if filtering by date, rows without a valid date drop out
-      if (fromDate && cellDate < fromDate) return false;
-      if (toDate && cellDate > toDate) return false;
-    }
-
-    return true;
-  });
-
-  document.getElementById("app").innerHTML = renderTable([header, ...body]);
-}
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      if (!q) {
+        document.getElementById("app").innerHTML = renderTable(allRows);
+        return;
+      }
 
       const header = allRows[0];
-      const body = allRows.slice(1).filter(r => r.join(" ").toLowerCase().includes(q));
+      const body = allRows
+        .slice(1)
+        .filter(r => r.join(" ").toLowerCase().includes(q));
+
       document.getElementById("app").innerHTML = renderTable([header, ...body]);
     }
 
     async function main() {
       const res = await fetch(CSV_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+
       const text = await res.text();
       allRows = parseCSV(text);
-      document.getElementById("app").innerHTML = renderTable(allRows);
-      document.getElementById("meta").textContent = "Last loaded: " + new Date().toLocaleString();
-      document.getElementById("q").addEventListener("input", applySearch);
-      document.getElementById("from").addEventListener("change", applySearch);
-document.getElementById("to").addEventListener("change", applySearch);
-document.getElementById("clear").addEventListener("click", () => {
-  document.getElementById("from").value = "";
-  document.getElementById("to").value = "";
-  applySearch();
-});
 
+      document.getElementById("app").innerHTML = renderTable(allRows);
+      document.getElementById("meta").textContent =
+        "Last loaded: " + new Date().toLocaleString();
+
+      document.getElementById("q").addEventListener("input", applySearch);
     }
 
     main().catch(err => {
       document.getElementById("meta").textContent = "Failed to load data.";
-      document.getElementById("app").innerHTML = "<pre>" + escapeHTML(err.message) + "</pre>";
+      document.getElementById("app").innerHTML =
+        "<pre>" + escapeHTML(err.message) + "</pre>";
     });
   </script>
 </body>
