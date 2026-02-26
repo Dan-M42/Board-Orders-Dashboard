@@ -33,10 +33,11 @@
         linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
+    /* ✅ Wider layout (uses the screen, but doesn’t go silly-wide) */
     .wrap{
-      max-width: 1440px;
-      margin: 22px auto 60px;
-      padding: 0 16px;
+      width: min(1800px, calc(100% - 32px));
+      margin: 18px auto 50px;
+      padding: 0;
     }
 
     /* Header */
@@ -95,7 +96,7 @@
       position:relative;
       min-width: 340px;
       flex: 1 1 340px;
-      max-width: 620px;
+      max-width: 820px; /* ✅ wider search */
     }
 
     .search input{
@@ -169,7 +170,7 @@
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 1500px; /* wide enough to reduce truncation */
+      min-width: 1900px; /* ✅ wider table so columns aren’t squashed */
       font-size: 13px;
     }
 
@@ -224,28 +225,16 @@
     }
 
     /* Column sizing (based on your current column order) */
-    /* 1 Job Number */
     thead th:nth-child(1), tbody td:nth-child(1){ max-width: 120px; }
-    /* 2 Customer Name */
-    thead th:nth-child(2), tbody td:nth-child(2){ max-width: 260px; }
-    /* 3 PO# */
+    thead th:nth-child(2), tbody td:nth-child(2){ max-width: 280px; }
     thead th:nth-child(3), tbody td:nth-child(3){ max-width: 120px; }
-    /* 4 Board description */
-    thead th:nth-child(4), tbody td:nth-child(4){ max-width: 420px; }
-    /* 5 Sheet size */
-    thead th:nth-child(5), tbody td:nth-child(5){ max-width: 130px; }
-    /* 6 Print Size */
-    thead th:nth-child(6), tbody td:nth-child(6){ max-width: 130px; }
-    /* 7 Stock Cut */
-    thead th:nth-child(7), tbody td:nth-child(7){ max-width: 160px; }
-    /* 8 Due date */
-    thead th:nth-child(8), tbody td:nth-child(8){ max-width: 170px; }
-    /* 9 Sheets */
+    thead th:nth-child(4), tbody td:nth-child(4){ max-width: 520px; } /* Board desc wider */
+    thead th:nth-child(5), tbody td:nth-child(5){ max-width: 140px; }
+    thead th:nth-child(6), tbody td:nth-child(6){ max-width: 140px; }
+    thead th:nth-child(7), tbody td:nth-child(7){ max-width: 180px; }
+    thead th:nth-child(8), tbody td:nth-child(8){ max-width: 180px; }
     thead th:nth-child(9), tbody td:nth-child(9){ max-width: 120px; text-align:right; font-variant-numeric: tabular-nums; }
-    /* 10 Comments */
-thead th:nth-child(11), tbody td:nth-child(11){
-  max-width: 1200px;   /* bigger comments */
-}
+    thead th:nth-child(10), tbody td:nth-child(10){ max-width: 1200px; } /* ✅ Comments much wider */
 
     /* Footer */
     .footerbar{
@@ -288,7 +277,7 @@ thead th:nth-child(11), tbody td:nth-child(11){
       .search{ min-width: 100%; max-width: 100%; }
       .btn{ width: 100%; }
       .table-wrap{ max-height: none; }
-      table{ min-width: 1400px; }
+      table{ min-width: 1700px; }
     }
   </style>
 </head>
@@ -386,7 +375,6 @@ thead th:nth-child(11), tbody td:nth-child(11){
         header.map(h => `<th>${escapeHTML(h)}</th>`).join("") +
         "</tr></thead>";
 
-      // Add title="" so hover shows full value
       const tbody =
         "<tbody>" +
         body.map(r =>
