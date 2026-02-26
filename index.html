@@ -6,6 +6,10 @@
   <title>Board Orders</title>
 
   <style>
+    .yes{
+  color: var(--accent);
+  font-weight: 800;
+}
     :root{
       --bg:#e6eaf2;     /* soft grey */
       --bg2:#f0f3f9;    /* lighter gradient */
@@ -364,32 +368,39 @@
       }[m]));
     }
 
-    function renderTable(rows) {
-      if (!rows || !rows.length) return "<div style='padding:14px'>No data.</div>";
+function renderTable(rows) {
+  if (!rows || !rows.length) return "<div style='padding:14px'>No data.</div>";
 
-      const header = rows[0];
-      const body = rows.slice(1);
+  const header = rows[0];
+  const body = rows.slice(1);
 
-      const thead =
-        "<thead><tr>" +
-        header.map(h => `<th>${escapeHTML(h)}</th>`).join("") +
-        "</tr></thead>";
+  const onsiteIdx = header.findIndex(h => String(h || "").trim().toLowerCase() === "onsite");
 
-      const tbody =
-        "<tbody>" +
-        body.map(r =>
-          "<tr>" +
-          header.map((_, i) => {
-            const v = r[i] ?? "";
-            const safe = escapeHTML(v);
-            return `<td title="${safe}">${safe}</td>`;
-          }).join("") +
-          "</tr>"
-        ).join("") +
-        "</tbody>";
+  const thead =
+    "<thead><tr>" +
+    header.map(h => `<th>${escapeHTML(h)}</th>`).join("") +
+    "</tr></thead>";
 
-      return `<table>${thead}${tbody}</table>`;
-    }
+  const tbody =
+    "<tbody>" +
+    body.map(r =>
+      "<tr>" +
+      header.map((_, i) => {
+        const v = r[i] ?? "";
+        const txt = String(v).trim();
+        const safe = escapeHTML(v);
+
+        const isYes = (i === onsiteIdx) && (txt.toUpperCase() === "YES");
+        const cls = isYes ? ' class="yes"' : "";
+
+        return `<td${cls} title="${safe}">${safe}</td>`;
+      }).join("") +
+      "</tr>"
+    ).join("") +
+    "</tbody>";
+
+  return `<table>${thead}${tbody}</table>`;
+}
 
     function setCounts(totalRows, showingRows) {
       document.getElementById("rows").textContent = String(totalRows);
